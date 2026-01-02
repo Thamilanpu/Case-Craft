@@ -357,6 +357,7 @@ const Designer = () => {
                                     }}
                                     className="rounded-xl border border-slate-200 px-4 py-3"
                                 >
+                                    <option value="">Choose Your Phone Model</option>
                                     {models.map((m) => (
                                         <option key={m._id} value={m._id}>
                                             {m.name}
