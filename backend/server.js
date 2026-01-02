@@ -48,8 +48,13 @@ app.get("/api", (req, res) => {
   res.json({
     status: "success",
     message: "Phone Cover Customizer API is successfully hosted on Vercel!",
-    version: "1.0.0"
+    version: "1.0.0",
+    timestamp: new Date().toISOString()
   });
+});
+
+app.get("/api/health", (req, res) => {
+  res.json({ status: "ok", message: "Backend is healthy" });
 });
 
 app.get("/", (req, res) => {
