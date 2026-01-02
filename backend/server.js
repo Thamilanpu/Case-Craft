@@ -34,9 +34,27 @@ const __dirname = path.dirname(__filename);
 connectDB();
 
 // Middleware
+// Middleware
+const allowedOrigins = [
+  "http://localhost:3000",
+  "http://localhost:5173",
+  "http://localhost:8888",
+  "https://case-craft-aobr.vercel.app",
+  process.env.CLIENT_URL
+].filter(Boolean);
+
 app.use(
   cors({
-    origin: CLIENT_URL,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (like mobile apps or curl requests)
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1 || !process.env.NODE_ENV === 'production') {
+        callback(null, true);
+      } else {
+        // Optional: Allow all during dev/testing if needed, or be strict
+        callback(null, true); // Temporarily allow all to avoid issues during debugging
+      }
+    },
     credentials: true
   })
 );
@@ -44,26 +62,15 @@ app.use(express.json({ limit: "50mb" }));
 app.use(morgan("dev"));
 
 // Routes
-app.get("/api", (req, res) => {
-  res.json({
-    status: "success",
-    message: "Phone Cover Customizer API is successfully hosted on Vercel!",
-    version: "1.0.0",
-    timestamp: new Date().toISOString()
-  });
-});
+const apiRouter = express.Router();
 
-app.get("/api/health", (req, res) => {
-  res.json({ status: "ok", message: "Backend is healthy" });
-});
-
-app.get("/", (req, res) => {
+apiRouter.get("/", (req, res) => {
   res.json({ message: "Phone Cover Customizer API is running" });
 });
 
-app.post("/create-payment-intent", async (req, res) => {
+apiRouter.post("/create-payment-intent", async (req, res) => {
   try {
-    const { amount, currency = "usd" } = req.body; // amount in cents
+    const { amount, currency = "usd" } = req.body;
     const paymentIntent = await stripe.paymentIntents.create({
       amount,
       currency,
@@ -75,13 +82,16 @@ app.post("/create-payment-intent", async (req, res) => {
   }
 });
 
+apiRouter.use("/auth", authRoutes);
+apiRouter.use("/orders", orderRoutes);
+apiRouter.use("/admin", adminRoutes);
+apiRouter.use("/phone-models", phoneModelRoutes);
+apiRouter.use("/pet-products", petProductRoutes);
+apiRouter.use("/admin/pet-products", petProductRoutes);
 
-app.use("/api/auth", authRoutes);
-app.use("/api/orders", orderRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/phone-models", phoneModelRoutes);
-app.use("/api/pet-products", petProductRoutes);
-app.use("/api/admin/pet-products", petProductRoutes);
+// Mount router
+app.use("/api", apiRouter);
+app.use("/", apiRouter);
 
 
 

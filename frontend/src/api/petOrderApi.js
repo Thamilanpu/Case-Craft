@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+const API_URL = import.meta.env.VITE_API_URL || "/api";
 
 // Admin: fetch pet orders with pagination & search
 export const getPetOrders = async ({ page = 1, search = "", token }) => {
