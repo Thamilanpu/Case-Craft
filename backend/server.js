@@ -44,14 +44,6 @@ app.use(express.json({ limit: "50mb" }));
 app.use(morgan("dev"));
 
 // Routes
-app.get("/api", (req, res) => {
-  res.json({
-    status: "success",
-    message: "Phone Cover Customizer API is successfully hosted on Vercel!",
-    version: "1.0.0"
-  });
-});
-
 app.get("/", (req, res) => {
   res.json({ message: "Phone Cover Customizer API is running" });
 });
