@@ -10,8 +10,8 @@
       "destination": "/backend/server.js"
     },
     {
-      "source": "/(.*)",
-      "destination": "/index.html"
+      "source": "/((?!api).*)",
+      "destination": "/frontend/index.html"
     }
   ],
   "builds": [
